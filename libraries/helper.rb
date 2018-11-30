@@ -28,25 +28,29 @@ module LibArchiveCookbook
       #
       # @return [Boolean]
       def extract(src, dest, options = [])
-        require 'ffi-libarchive'
+        # require 'ffi-libarchive'
 
-        flags = [options].flatten.map { |option| extract_option_map[option] }.compact.reduce(:|)
-        modified = false
+        # flags = [options].flatten.map { |option| extract_option_map[option] }.compact.reduce(:|)
+        # modified = false
 
-        Dir.chdir(dest) do
-          archive = Archive::Reader.open_filename(src)
+        # Dir.chdir(dest) do
+        #   archive = Archive::Reader.open_filename(src)
 
-          archive.each_entry do |e|
-            pathname = File.expand_path(e.pathname)
-            if File.exist?(pathname)
-              modified = true unless File.mtime(pathname) == e.mtime
-            else
-              modified = true
-            end
+        #   archive.each_entry do |e|
+        #     pathname = File.expand_path(e.pathname)
+        #     if File.exist?(pathname)
+        #       modified = true unless File.mtime(pathname) == e.mtime
+        #     else
+        #       modified = true
+        #     end
 
-            archive.extract(e, flags.to_i)
-          end
-        end
+        #     archive.extract(e, flags.to_i)
+        #   end
+        # end
+        modified = true
+        require "mixlib/archive"
+        tar = Mixlib::Archive.new(src)
+        tar.extract(dest)
 
         modified
       end
